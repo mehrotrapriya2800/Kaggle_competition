@@ -4,6 +4,18 @@ import tensorflow as tf
 data_train_final = pd.read_csv("train.csv")                                
 test_data = pd.read_csv("test.csv")
 
+
+print(data_train_final.shape)
+print(test_data.shape)
+
+print(data_train_final.head())
+print(test_data.head())
+
+print(data_train_final.columns)
+print(test_data.columns)
+
+
+
 #applying feature engineering to both training and test dataset
 
 test_data['new_col1'] = (test_data['n_classes'] * test_data['n_clusters_per_class'])/test_data['n_jobs']
@@ -14,12 +26,14 @@ data_train_final['new_col1'] = (data_train_final['n_classes'] * data_train_final
 data_train_final['new_col3'] = data_train_final['new_col1']/data_train_final['n_informative']
 data_train_final.loc[data_train_final['n_jobs'] == -1, 'n_jobs'] = 16
 data_train_final['new_col2'] = (data_train_final['max_iter'] * data_train_final['n_samples'])/data_train_final['n_jobs']
+#data_train_final= pd.get_dummies(data_train_final)
 
-lab = data_train_final["time"]
+
+lab = data_train_final['time']
 data_train_final = data_train_final.drop(['time'], axis=1)
 
-pen = data_train_final["penalty"]
-pen1 = test_data["penalty"]
+pen = data_train_final['penalty']
+pen1 = test_data['penalty']
 
 
 numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
@@ -27,14 +41,34 @@ new_df_train = data_train_final.select_dtypes(include=numerics)
 new_df_test = test_data.select_dtypes(include=numerics)
 
 train = (new_df_train - new_df_test.mean())/new_df_test.std(ddof=0)
-train = train.join(pen) #joining penalty column
+train = pd.concat([train,pen], axis=1) #joining penalty column
 test = (new_df_test - new_df_test.mean())/new_df_test.std(ddof=0)
-test = test.join(pen1) #joining penalty column
+test = pd.concat([test,pen1], axis=1) #joining penalty column
+
+print(train.shape)
+print(test.shape)
+print(train.columns)
+print(test.columns)
 
 #dropping some columns
 
 train = train.drop(columns=['l1_ratio','scale','random_state','alpha','flip_y'])
 test = test.drop(columns=['l1_ratio','scale','random_state','alpha','flip_y'])
+
+print(train.shape)
+print(test.shape)
+print(train.head())
+print(test.head())
+
+
+print(train.columns)
+print(test.columns)
+
+#from sklearn import preprocessing
+#scaler = preprocessing.MaxAbsScaler( )
+#x= scaler.fit_transform(x)
+#test1= scaler.fit_transform(test1)
+
 
 #deciding the BATCH_SIZE and num_epochs
 
