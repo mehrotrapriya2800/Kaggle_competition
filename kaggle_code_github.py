@@ -16,9 +16,8 @@ data_train_final.loc[data_train_final['n_jobs'] == -1, 'n_jobs'] = 16
 data_train_final['new_col2'] = (data_train_final['max_iter'] * data_train_final['n_samples'])/data_train_final['n_jobs']
 
 lab = data_train_final["time"]
-
-
 data_train_final = data_train_final.drop(['time'], axis=1)
+
 pen = data_train_final["penalty"]
 pen1 = test_data["penalty"]
 
@@ -84,12 +83,7 @@ model = tf.estimator.DNNLinearCombinedRegressor(\
 
 model.train(input_fn=input_train)
 
-predict_input_fn = tf.estimator.inputs.pandas_input_fn(\
-        x=test,\
-        batch_size=1,\
-        num_epochs=1,\
-        shuffle=False)
-
+predict_input_fn = tf.estimator.inputs.pandas_input_fn(x=test, batch_size=1, num_epochs=1, shuffle=False)
 predictions = model.predict(input_fn=predict_input_fn)
 
 prediction = []
